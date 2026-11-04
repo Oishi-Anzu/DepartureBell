@@ -1,0 +1,360 @@
+﻿<Window x:Class="DepartureBell.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="発車ベル操作盤"
+        Height="700" Width="1000"
+        MinHeight="550" MinWidth="800"
+        WindowStartupLocation="CenterScreen"
+        Closing="MainWindow_Closing">
+
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- ヘッダー -->
+        <Border Grid.Row="0" Background="#263445">
+            <DockPanel Margin="20,0">
+                <TextBlock Text="発車ベル操作盤"
+                           Foreground="White"
+                           FontSize="22"
+                           FontWeight="Bold"
+                           VerticalAlignment="Center"/>
+
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            DockPanel.Dock="Right">
+                    <Button Content="操作画面"
+                            Width="110" Margin="5"
+                            Click="ShowOperation_Click"/>
+                    <Button Content="管理画面"
+                            Width="110" Margin="5"
+                            Click="ShowManagement_Click"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <Grid Grid.Row="1">
+
+            <!-- 操作画面 -->
+            <ScrollViewer x:Name="OperationPanel"
+              Visibility="Visible"
+              Margin="20"
+              VerticalScrollBarVisibility="Auto">
+
+                <StackPanel>
+                    <TextBlock Text="発車メロディ操作"
+                   FontSize="26"
+                   FontWeight="Bold"
+                   Margin="0,0,0,20"/>
+
+                    <GroupBox Header="発車メロディ" Padding="15"
+                  Margin="0,0,0,15">
+                        <StackPanel>
+                            <TextBlock Text="メロディを選択してください"
+                           FontSize="16"/>
+
+                            <ComboBox x:Name="MelodyComboBox"
+                                      DisplayMemberPath="Name"
+                                      Height="40"
+                                      FontSize="16"
+                                      Margin="0,10,0,0"/>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <GroupBox Header="DSR状態監視" Padding="15"
+                  Margin="0,0,0,15">
+                        <Border BorderBrush="Gray"
+        BorderThickness="1"
+        Padding="12"
+        Margin="5">
+
+                            <StackPanel>
+
+                                <TextBlock Text="シリアル / DSR設定"
+                   FontSize="18"
+                   FontWeight="Bold"
+                   Margin="0,0,0,10"/>
+
+                                <TextBlock Text="接続COMポート"/>
+
+                                <ComboBox x:Name="SerialPortComboBox"
+                  Width="180"
+                  HorizontalAlignment="Left"
+                  Margin="0,5,0,10"
+                  SelectionChanged="SerialPortComboBox_SelectionChanged"/>
+
+                                <Button Content="ポート一覧更新"
+                Width="180"
+                HorizontalAlignment="Left"
+                Click="RefreshSerialPorts_Click"
+                Margin="0,0,0,10"/>
+
+                                <TextBlock x:Name="SerialStatusText"
+                   Text="接続待機中"
+                   Margin="0,5,0,0"
+                   FontWeight="Bold"/>
+
+                                <TextBlock x:Name="DsrStatusText"
+                   Text="DSR：未確認"
+                   Margin="0,5,0,0"/>
+
+                            </StackPanel>
+
+                        </Border>
+                    </GroupBox>
+
+                    <!-- 共通操作ボタン -->
+                    <TextBlock Text="操作"
+                   FontSize="18"
+                   FontWeight="Bold"
+                   Margin="0,10,0,10"/>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="再生"
+                    Width="150"
+                    Height="70"
+                    FontSize="22"
+                    Margin="0,0,10,0"
+                    Click="PlayMelody_Click"/>
+
+                        <Button Content="停止"
+                    Width="150"
+                    Height="70"
+                    FontSize="22"
+                    Click="StopAudio_Click"/>
+                    </StackPanel>
+
+                    <TextBlock x:Name="PlaybackStatus"
+                   Text="再生状態：停止中"
+                   FontSize="16"
+                   Margin="0,20,0,0"/>
+
+                    <TextBlock x:Name="ConnectionStatus"
+                   Text="シリアル通信：未接続"
+                   FontSize="16"
+                   Margin="0,10,0,0"/>
+                </StackPanel>
+            </ScrollViewer>
+
+
+
+            <!-- 管理画面 -->
+            <Grid x:Name="ManagementPanel"
+      Visibility="Collapsed"
+      Margin="20">
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="音源管理"
+                   FontSize="26"
+                   FontWeight="Bold"
+                   Margin="0,0,0,20"/>
+
+                    <TabControl Grid.Row="1">
+
+                        <!-- 発車メロディ -->
+                        <TabItem Header="発車メロディ">
+                            <Grid Margin="15">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="メロディを追加"
+                                Width="180"
+                                Height="40"
+                                Margin="0,0,10,0"
+                                Click="AddMelody_Click"/>
+
+                                    <Button Content="選択したメロディを削除"
+                                Width="200"
+                                Height="40"
+                                Click="DeleteMelody_Click"/>
+
+                                    <Button Content="選択したメロディの名前を変更"
+        Click="RenameMelody_Click"
+        Margin="5"/>
+                                </StackPanel>
+
+                                <ListBox x:Name="MelodyListBox"
+         DisplayMemberPath="Name"
+         Grid.Row="1"
+         Margin="0,15,0,0"/>
+                            </Grid>
+                        </TabItem>
+
+                        <!-- 戸閉放送 -->
+                        <TabItem Header="戸閉放送">
+                            <Grid Margin="15">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="戸閉放送を追加"
+                                Width="180"
+                                Height="40"
+                                Margin="0,0,10,0"
+                                Click="AddDoorAnnouncement_Click"/>
+
+                                    <Button Content="選択した戸閉放送を削除"
+                                Width="200"
+                                Height="40"
+                                Click="DeleteDoorAnnouncement_Click"/>
+
+                                    <Button Content="選択した戸閉放送の名前を変更"
+        Click="RenameDoorAnnouncement_Click"
+        Margin="5"/>
+                                </StackPanel>
+
+                                <ListBox x:Name="DoorAnnouncementListBox"
+         DisplayMemberPath="Name"
+         Grid.Row="1"
+         Margin="0,15,0,0"/>
+                            </Grid>
+                        </TabItem>
+                        <!-- メロディ設定 -->
+                        <TabItem Header="メロディ設定">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <StackPanel Margin="20">
+
+                                    <TextBlock Text="設定するメロディ"
+                                               FontSize="18"
+                                               FontWeight="Bold"/>
+
+                                    <ComboBox x:Name="SettingsMelodyComboBox"
+                                              DisplayMemberPath="Name"
+                                              Height="35"
+                                              Margin="0,8,0,20"
+                                              SelectionChanged="SettingsMelodyComboBox_SelectionChanged"/>
+
+
+                                    <TextBlock Text="音量"
+                                               FontSize="16"
+                                               FontWeight="Bold"/>
+
+                                    <Slider x:Name="MelodyVolumeSlider"
+                                            Minimum="0"
+                                            Maximum="100"
+                                            Value="100"
+                                            TickFrequency="5"
+                                            Margin="0,10,0,20"/>
+
+                                    <TextBlock Text="再生モード"
+                                               FontSize="16"
+                                               FontWeight="Bold"/>
+
+                                    <ComboBox x:Name="MelodyModeComboBox"
+                                              Height="35"
+                                              Margin="0,8,0,20">
+                                        <ComboBoxItem Content="通常"/>
+                                        <ComboBoxItem Content="立川式"/>
+                                        <ComboBoxItem Content="西荻窪式"/>
+                                        <ComboBoxItem Content="新幹線式"/>
+                                    </ComboBox>
+
+                                    <TextBlock Text="停止時に再生する戸閉放送"
+                                               FontSize="16"
+                                               FontWeight="Bold"/>
+
+                                    <ComboBox x:Name="MelodyDoorAnnouncementComboBox"
+                                              DisplayMemberPath="Name"
+                                              Height="35"
+                                              Margin="0,8,0,20"/>
+                                    <TextBlock Text="新幹線式設定"
+           FontSize="18"
+           FontWeight="Bold"
+           Margin="0,10,0,10"/>
+
+                                    <TextBlock Text="戸閉放送開始までの時間（ミリ秒）"
+           FontSize="16"
+           FontWeight="Bold"/>
+
+                                    <StackPanel Orientation="Horizontal"
+            VerticalAlignment="Center">
+                                        <TextBox x:Name="ShinkansenDelayTextBox"
+             Width="120"
+             Height="35"
+             Text="500"
+             FontSize="16"
+             VerticalContentAlignment="Center"/>
+
+                                        <TextBlock Text="ms"
+               Margin="10,0,0,0"
+               VerticalAlignment="Center"/>
+                                    </StackPanel>
+
+                                    <TextBlock Text="メロディ音量の減衰率（％）"
+           FontSize="16"
+           FontWeight="Bold"
+           Margin="0,15,0,0"/>
+
+                                    <StackPanel Orientation="Horizontal"
+            VerticalAlignment="Center">
+                                        <TextBox x:Name="ShinkansenAttenuationTextBox"
+             Width="120"
+             Height="35"
+             Text="40"
+             FontSize="16"
+             VerticalContentAlignment="Center"/>
+
+                                        <TextBlock Text="%"
+               Margin="10,0,0,0"
+               VerticalAlignment="Center"/>
+                                    </StackPanel>
+
+                                    <Button Content="このメロディの設定を保存"
+                                            Width="240"
+                                            Height="45"
+                                            HorizontalAlignment="Left"
+                                            Click="SaveMelodySettings_Click"/>
+
+                                </StackPanel>
+                            </ScrollViewer>
+                        </TabItem>
+
+                        <!-- 動作設定 -->
+                        <TabItem Header="動作設定">
+                            <StackPanel Margin="20">
+
+                                <TextBlock Text="戸閉放送中に再生ボタンを押した場合"
+                                           FontSize="18"
+                                           FontWeight="Bold"
+                                           Margin="0,0,0,15"/>
+
+                                <RadioButton x:Name="StopDoorBeforeMelodyRadio"
+                                             Content="戸閉放送を停止してメロディを再生する"
+                                             FontSize="16"
+                                             IsChecked="True"
+                                             Margin="0,5"/>
+
+                                <RadioButton x:Name="OverlayDoorMelodyRadio"
+                                             Content="戸閉放送に重ねてメロディを再生する"
+                                             FontSize="16"
+                                             Margin="0,5"/>
+
+                                <Button Content="動作設定を保存"
+                                        Width="180"
+                                        Height="45"
+                                        HorizontalAlignment="Left"
+                                        Margin="0,20,0,0"
+                                        Click="SavePlaybackSettings_Click"/>
+
+                            </StackPanel>
+                        </TabItem>
+
+                    </TabControl>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>
